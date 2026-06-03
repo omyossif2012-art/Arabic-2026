@@ -175,7 +175,7 @@
     <div class="footer-banner">مقولب ومنفذ لصالح شعب اللغة العربية بمدرسة مربح للتعليم الأساسي.</div>
 
     <script>
-        // سياق توليد نغمة الإنذار برمجياً بدون الحاجة لملفات صوتية خارجية
+        // نظام توليد صوت إنذار متأرجح وسريع جداً (Siren Effect)
         let audioCtx = null;
         let alarmInterval = null;
 
@@ -184,24 +184,30 @@
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                if (alarmInterval) return; // الإنذار يعمل بالفعل
+                if (alarmInterval) return; // منع التكرار إذا كان يعمل بالفعل
 
+                // معدل تكرار سريع جداً (كل 150 مللي ثانية) ليعطي تأثير تذبذب الشرطة الخاطف
                 alarmInterval = setInterval(() => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
+                    
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
                     
-                    osc.type = 'sawtooth'; // صوت إنذار حاد وقوي
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // تردد مرتفع
-                    osc.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.3); // صوت متذبذب نياو-نياو
+                    // استخدام الموجة المربعة لحدة أعلى تشبه الأجهزة الإلكترونية الأمنية
+                    osc.type = 'square'; 
                     
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    // تأرجح ترددي سريع جداً ومستمر بين صوت حاد جداً وصوت غليظ
+                    let now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(900, now); // تردد حاد أول
+                    osc.frequency.linearRampToValueAtTime(450, now + 0.15); // هبوط خاطف وسريع جداً
                     
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
-                }, 350);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                }, 150); 
             } catch(e) {
                 console.log("Audio Error:", e);
             }
@@ -227,11 +233,11 @@
             { type: "info", q: "ما معنى كلمة 'الركيزة' في عبارة (شكل البحر الركيزة الأساسية للحياة)؟", o: ["العائق والصعوبة.", "الأساس والدعامة الجوهرية.", "التحول المفاجئ.", "النهاية والختام."], a: 1 },
             { type: "info", q: "كم تبلغ نسبة استدامة حماية البيئة الموجهة لصون هذا الإرث التقليدي اليوم؟", o: ["85%.", "40%.", "95%.", "10%."], a: 2 },
             { type: "info", q: "بناءً على النص، بماذا وصفت البيئة البحرية وتأثيرها على وجوه الأجداد؟", o: ["مياه عذبة تمحو آثار السنين والتشققات.", "بحر عنيد وجبار ترك أمواجه وملحه شروخاً غائرة في لحم جباههم.", "شواطئ رملية ناعمة خالية من الصخور والأعشاب.", "مساحات ترفيهية لا تتطلب جهداً أو كفاحاً."], a: 1 },
-            { type: "info", q: "ما هو دور الأجيال الحالية والدولة تجاه هذا التاريخ البحري？", o: ["تركه ونسيانه بالكامل والتركيز على التكنولوجيا فقط.", "حمايته وصونه كإرث ثقافي يربط الحاضر بالماضي العريق.", "تحويل كل السفن التقليدية إلى مصانع حديدية.", "منع الصيد نهائياً في كافة الشواطئ."], a: 1 },
+            { type: "info", q: "ما هو دور الأجيال الحالية والدولة تجاه هذا التاريخ البحري؟", o: ["تركه ونسيانه بالكامل والتركيز على التكنولوجيا فقط.", "حمايته وصونه كإرث ثقافي يربط الحاضر بالماضي العريق.", "تحويل كل السفن التقليدية إلى مصانع حديدية.", "منع الصيد نهائياً في كافة الشواطئ."], a: 1 },
             { type: "info", q: "حددي العبارة التي تضمنت 'تشبيهاً' ممّا ورد في النص المعلوماتي:", o: ["شكل البحر الركيزة الأساسية للحياة.", "فالبحر يوصف بأنه جبار لا يلين يواجهه بحارة أشداء.", "تشير الدراسات التاريخية إلى نسب معينة.", "تبذل الدولة جهوداً هائلة بنسبة استدامة."], a: 1 },
             { type: "info", q: "ما القيمة المستفادة والرسالة التي يوجهها النص للقارئ؟", o: ["تفضيل حياة المدن الصاخبة على حياة السواحل.", "تقدير كفاح الأجداد المتعبين والاعتزاز بالهوية والإرث البحري الأصيل.", "إهمال الحرف اليدوية والتقليدية القديمة.", "تشجيع السفر الدائم للخارج وترك الأوطان."], a: 1 },
             { type: "long", q: "أي من الأحداث الآتية جاء 'أولاً' بحسب ترتيبها الزمني في الرواية والقصة؟", o: ["قفز مبارك من نومه مرعوباً وتساءله عمن هناك.", "التمترس خلف الأكياس الرملية على الشاطئ في الليل الموحش العتم.", "البحث عن السكين بين أكوام الشباك في الخن.", "سحب المرساء وتثبيت المجاديف ودفع الشاحوف."], a: 1 },
-            { type: "long", q: "بمَ تشعر شخصية 'مبارك' في اللحظة التي شهر فيها أبو عبد الله السكين في وجهه؟", o: ["الغضب الشديد والرغبة في القتال.", "الخوف، والارتعاش، والتراجع للخلف بذعر وذهول.", "الطمانينة الكاملة والضحك العالي.", "الشوق لمغادرة الشاطئ فوراً."], a: 1 },
+            { type: "long", q: "بمَ تشعر شخصية 'مبارك' في اللحظة التي شهر فيها أبو عبد الله السكين في وجهه？", o: ["الغضب الشديد والرغبة في القتال.", "الخوف، والارتعاش، والتراجع للخلف بذعر وذهول.", "الطمانينة الكاملة والضحك العالي.", "الشوق لمغادرة الشاطئ فوراً."], a: 1 },
             { type: "long", q: "كيف تفسرين تصرف 'أبو عبد الله' عندما أصر على دفع الشاحوف للرحيل ومواجهة الوحش الرابض؟", o: ["يعبر عن رغبة شخصية في الانتحار والتخلص من أعباء الحياة.", "ينبع من روحه الوطنية، وصموده الثائر، ورفضه للاستسلام أمام العدو (الوحش) الذي دمر بلده وحولها إلى أطلال.", "دافعها كان الطمع في نهب قوارب التجديف التابعة للعدو.", "تصرف عشوائي ناتج عن الهيستيريا وفقدان الذاكرة بسبب رصاص البنادق."], a: 1 },
             { type: "long", q: "ما أثر رؤية الدمار والحرائق والجثث المحترقة على أفعال شخصية 'أبو عبد الله' مستقبلاً؟", o: ["دفعته الأحداث الأليمة للبكاء الصامت ثم التحرك العازم للثورة وتدمير سفينة العدو ليلاً دون تردد.", "جعلته يقرر مغادرة الحي الحزين والهرب عبر الزقاق الضيق.", "دفعته لإلقاء بندقيته العتيقة (أبو فتيل) في أعماق البحر.", "جعلته يستسلم للنوم والراحة التامة فوق الأكياس الرملية."], a: 0 },
             { type: "long", q: "ما الصفة المعنوية والنفسية الأبرز التي تميزت بها شخصية 'خليل' في قصة الوجه الآخر عند إصراره على الكتابة؟", o: ["الكسل والخوف من أصحاب السلطة والنفوذ.", "الإصرار، والالتزام بقضايا الكادحين والمتعبين، والشجاعة الفكرية رغم إعاقته الجسدية.", "الطيش والرغبة في جمع الأموال الطائلة من المقالات.", "التردد الدائم والاعتماد الكلي على آراء الآخرين دون تفكير."], a: 1 },
@@ -245,7 +251,7 @@
         const readingTexts = {
             short: `<h3>النص الأول المرفق: قصة "أحلام طفلة" للكاتبة صالحة غابش</h3><p>"اسْتَسْلَمَتْ لِمُدَاعَبَاتِ الفَرَحِ الَّذِي اجْتَاحَ نَفْسَهَا... وَهِيَ وَاقِفَةٌ أَمَامَ المِرْآةِ تُهَنْدِمُ حَالَهَا... وَتَطْمَئِنُّ عَلَى أَنَاقَتِهَا... عَلَى ثَوْبِهَا الجَدِيدِ المُكْتَنِزِ بِالأَلْوَانِ الزَّاهِيَةِ... وَلَكِنْ... يَنْقَبِضُ قَلْبُهَا قَلِيلاً، تَخَافُ أَلا تَلْتَقِيَ بِهِنَّ..."</p>`,
             info: `<h3>النص الثاني المرفق: النص المعلوماتي الخارجي</h3><p><strong>"الصيد التقليدي ومكانة البحر في مجتمع الإمارات قديماً"</strong></p><p>شكّل البحر في دولة الإمارات العربية المتحدة قديماً الركيزة الأساسية للحياة الاقتصادية والاجتماعية، حيث اعتمد الأجداد على الغوص وبناء سفن الصيد التقليدية مثل (اللنج) و(الشاحوف)، قبل ظهور النفط بلغت نسبة الاعتماد على البحر نحو 85% من السكان في البيئات الساحلية، حيث كان البحر بمثابة مدرسة يومية للصبر والكفاح وتوارث القيم الإنسانية، وهو ما تسعى الدولة اليوم لصونه واستدامته بنسبة حماية بيئية وتراثية تصل إلى 95% لربط الحاضر بالماضي العريق وثقافة الأجداد الذين ترك البحر في وجوههم شروحاً غائرة تحكي قصصاً لا تُنسى.</p>`,
-            long: `<h3>النص الثالث المرفق: مقتطف قصة "عاشق الجدار القديم" والوجه الآخر</h3><p>"في اللَّيْلِ الموحِشِ العَتِمِ كانوا يَتمترسونَ خَلْفَ الأَكْياسِ الرَّمْلِيَّةِ على الشّاطِئِ، أَيْديهمُ مُمْسِكَةٌ بِالبَنادِقِ العَتيقَةِ... وَصَلْتُ الشّاطِئَ.. تَراءى لي الشّاحوفُ يتَراقَصُ مَعَ الأَمْواجِ الصَّغيرَةِ... قَفَزَ مُبارَكٌ مِنْ نَوْمِهِ مَرْعوبًا حركته المباغتة أوقعت السكين في الخن, بينما شهر أبو عبد الله بندقيته الثائرة رافضاً الاستسلام أمام الوحش الرابض الذي دمر القرية وحولها لأطلال محترقة، عازماً على الانتقام واسترداد الكرامة ليلاً مهما كانت التضحيات."</p>`
+            long: `<h3>النص الثالث المرفق: مقتطف قصة "عاشق الجدار القديم" والوجه الآخر</h3><p>"في اللَّيْلِ الموحِشِ العَتِمِ كانوا يَتمترسونَ خَلْفَ الأَكْياسِ الرَّمْلِيَّةِ على الشّاطِئِ، أَيْديهمُ مُمْسِكَةٌ بِالبَنادِقِ العَتيقَةِ... وَصَلْتُ الشّاطِئَ.. تَراءى لي الشّاحوفُ يتَراقَصُ مَعَ الأَمْواجِ الصَّغيرَةِ... قَفَزَ مُبارَكٌ مِنْ نَوْمِهِ مَرْعوبًا حركته المباغتة أوقعت السكين في الخن، بينما شهر أبو عبد الله بندقيته الثائرة رافضاً الاستسلام أمام الوحش الرابض الذي دمر القرية وحولها لأطلال محترقة، عازماً على الانتقام واسترداد الكرامة ليلاً مهما كانت التضحيات."</p>`
         };
 
         let currentQIndex = 0;
@@ -254,15 +260,9 @@
         let globalStudentGrade = "";
         let isExamActive = false;
 
-        // رصد مغادرة الصفحة أو تغيير التبويب
-        window.addEventListener('blur', function() {
-            if (isExamActive) { triggerCheatLock(); }
-        });
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'hidden' && isExamActive) { triggerCheatLock(); }
-        });
+        window.addEventListener('blur', function() { if (isExamActive) { triggerCheatLock(); } });
+        document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden' && isExamActive) { triggerCheatLock(); } });
 
-        // رصد محاولات تصوير الشاشة (أزرار PrintScreen أو اختصارات النسخ والتصوير)
         window.addEventListener('keyup', function(e) {
             if (!isExamActive) return;
             if (e.key === 'PrintScreen' || e.keyCode === 44) {
@@ -272,15 +272,8 @@
         });
         window.addEventListener('keydown', function(e) {
             if (!isExamActive) return;
-            // حظر أزرار المطورين واختصارات الحفظ والتصوير المتوقعة
-            if (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'u' || e.key === 'c')) {
-                e.preventDefault();
-                triggerCheatLock();
-            }
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-                triggerCheatLock();
-            }
+            if (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'u' || e.key === 'c')) { e.preventDefault(); triggerCheatLock(); }
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) { e.preventDefault(); triggerCheatLock(); }
         });
 
         function triggerCheatLock() {
@@ -292,7 +285,6 @@
             
             if (document.fullscreenElement) { document.exitFullscreen(); }
             
-            // تفعيل صوت الإنذار
             playAlarmSound();
             
             const lockPanel = document.getElementById('step5-lock');
@@ -305,21 +297,11 @@
             const gradeSelect = document.getElementById('studentGrade').value;
             const agreeCheck = document.getElementById('agreeCheck').checked;
             
-            // تفعيل السياق الصوتي اختيارياً مع ضغطة الدخول لتفادي حظر المتصفحات للأصوات التلقائية
             try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
 
-            if(!nameInput || nameInput.length < 4) {
-                alert("يرجى كتابة الاسم الكامل للطالبة لتسجيل الحضور.");
-                return;
-            }
-            if(!gradeSelect) {
-                alert("يرجى اختيار الصف والشعبة المخصصة.");
-                return;
-            }
-            if(!agreeCheck) {
-                alert("يجب تفعيل خيار الموافقة لدخول المراجعة.");
-                return;
-            }
+            if(!nameInput || nameInput.length < 4) { alert("يرجى كتابة الاسم الكامل للطالبة لتسجيل الحضور."); return; }
+            if(!gradeSelect) { alert("يرجى اختيار الصف والشعبة المخصصة."); return; }
+            if(!agreeCheck) { alert("يجب تفعيل خيار الموافقة لدخول المراجعة."); return; }
             
             globalStudentName = nameInput;
             globalStudentGrade = gradeSelect;
@@ -348,25 +330,15 @@
 
         function requestFullScreenMode() {
             const element = document.documentElement; 
-            if (element.requestFullscreen) {
-                element.requestFullscreen().catch(err => console.log("Fullscreen error:", err));
-            } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-            } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
-            }
+            if (element.requestFullscreen) { element.requestFullscreen().catch(err => console.log(err)); }
+            else if (element.mozRequestFullScreen) { element.mozRequestFullScreen(); }
+            else if (element.webkitRequestFullscreen) { element.webkitRequestFullscreen(); }
+            else if (element.msRequestFullscreen) { element.msRequestFullscreen(); }
         }
 
         function startSpecificExam(examNum) {
-            if(examNum !== 1) {
-                alert(`اضغطي على النموذج رقم (1) لبدء الامتحان الحالي.`);
-                return;
-            }
-            
+            if(examNum !== 1) { alert(`اضغطي على النموذج رقم (1) لبدء الامتحان الحالي.`); return; }
             requestFullScreenMode();
-            
             isExamActive = true;
             document.getElementById('step2-grid').style.display = 'none';
             document.getElementById('step3-exam').style.display = 'flex';
@@ -438,21 +410,14 @@
             }
         }
 
-        function moveQuestion(step) {
-            currentQIndex += step;
-            renderCurrentQuestion();
-        }
+        function moveQuestion(step) { currentQIndex += step; renderCurrentQuestion(); }
 
         function showFinalScore() {
             isExamActive = false; 
-            
             if (document.fullscreenElement) { document.exitFullscreen(); }
             
             let correctCount = 0;
-            examQuestions.forEach((item, index) => {
-                if(selectedAnswers[index] === item.a) { correctCount++; }
-            });
-            
+            examQuestions.forEach((item, index) => { if(selectedAnswers[index] === item.a) { correctCount++; } });
             let finalScoreFrom100 = correctCount * 4;
             
             document.getElementById('step3-exam').style.display = 'none';
@@ -462,19 +427,10 @@
             document.getElementById('scoreDisplay').innerHTML = `${finalScoreFrom100}/100 <span>درجة</span>`;
             
             const msg = document.getElementById('appraisalMsg');
-            if(finalScoreFrom100 >= 90) {
-                msg.innerText = "رائعة ومتميزة جداً! فخر مدرسة مربح! 🏆🌟";
-                msg.style.color = "#28a745";
-            } else if(finalScoreFrom100 >= 70) {
-                msg.innerText = "أحسنتِ يا بطلة، نتيجة متميزة ومجهود رائع! 👍";
-                msg.style.color = "#004b87";
-            } else if(finalScoreFrom100 >= 50) {
-                msg.innerText = "ناجحة، وتستحقين التقدير؛ ننصحكِ بمزيد من التركيز. 🌹";
-                msg.style.color = "#d4af37";
-            } else {
-                msg.innerText = "محاولة تتطلب التطوير، يرجى إعادة مراجعة نصوص ومهارات الفصل الثالث. 📚";
-                msg.style.color = "#c62828";
-            }
+            if(finalScoreFrom100 >= 90) { msg.innerText = "رائعة ومتميزة جداً! فخر مدرسة مربح! 🏆🌟"; msg.style.color = "#28a745"; }
+            else if(finalScoreFrom100 >= 70) { msg.innerText = "أحسنتِ يا بطلة، نتيجة متميزة ومجهود رائع! 👍"; msg.style.color = "#004b87"; }
+            else if(finalScoreFrom100 >= 50) { msg.innerText = "ناجحة، وتستحقين التقدير؛ ننصحكِ بمزيد من التركيز. 🌹"; msg.style.color = "#d4af37"; }
+            else { msg.innerText = "محاولة تتطلب التطوير، يرجى إعادة مراجعة نصوص ومهارات الفصل الثالث. 📚"; msg.style.color = "#c62828"; }
         }
     </script>
 </body>
