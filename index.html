@@ -3,180 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الاختبار التجريبي الثاني - عاشق الجدار القديم</title>
+    <title>نظام الاختبارات التجريبية الذكية - مدرسة مربح</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f6f9; color: #333; overflow: hidden; }
+        body { background: linear-index; background-color: #5c54a4; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* ترويسة المدرسة والوزارة */
+        /* الترويسة الرسمية */
         .header-section {
             background-color: #fff; padding: 15px 30px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 3px solid #d4af37; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            align-items: center; border-bottom: 4px solid #d4af37; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%;
         }
-        .header-title { text-align: center; flex-grow: 1; color: #1a365d; }
-        .header-title h1 { font-size: 20px; margin-bottom: 5px; }
-        .header-title h2 { font-size: 16px; color: #e53e3e; }
-        .school-info { text-align: right; font-size: 14px; font-weight: bold; }
+        .header-title { text-align: center; flex-grow: 1; }
+        .header-title h2 { color: #004b87; font-size: 20px; margin-bottom: 5px; }
+        .header-title p { color: #666; font-size: 13px; font-weight: bold; }
+        .header-logo { border: 2px solid #d4af37; padding: 5px 15px; border-radius: 6px; text-align: center; font-size: 11px; max-width: 220px; line-height: 1.3; }
+
+        /* حاوية الشاشات الديناميكية */
+        .app-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; width: 100%; }
         
-        /* تقسيم الشاشة الموازي (محاكاة الوزاري) */
-        .main-container { display: flex; height: calc(100vh - 120px); }
+        /* 1. شاشة الدخول وتسجيل الاسم */
+        .card-panel { background: #fff; width: 100%; max-width: 550px; border-radius: 24px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; position: relative; border-top: 6px solid #d4af37; animation: fadeIn 0.5s ease; }
+        .card-panel h1 { font-size: 26px; color: #1a1a1a; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
+        .card-panel .subtitle { color: #777; font-size: 14px; margin-bottom: 25px; }
         
-        /* الجانب الأيمن: النص القرائي */
-        .story-side {
-            width: 50%; padding: 25px; background-color: #ffffff; overflow-y: auto;
-            border-left: 2px solid #e2e8f0; line-height: 1.8; font-size: 17px; text-align: justify;
-        }
-        .story-side h3 { color: #2c5282; margin-bottom: 15px; border-bottom: 2px solid #2c5282; padding-bottom: 5px; }
+        .form-group { text-align: right; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 14px 20px; border: 2px solid #efebd8; background-color: #fdfcf7; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.3s ease; text-align: right; }
+        .form-control:focus { border-color: #d4af37; box-shadow: 0 0 8px rgba(212,175,55,0.2); }
         
-        /* الجانب الأيسر: الأسئلة */
-        .questions-side { width: 50%; padding: 25px; overflow-y: auto; background-color: #f7fafc; }
-        .question-block {
-            background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-right: 5px solid #3182ce;
-        }
-        .question-text { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2d3748; }
+        /* صندوق الاتفاقية والموافقة */
+        .agreement-box { background-color: #fdf8e2; border: 1px solid #f3e5ab; border-radius: 10px; padding: 15px; text-align: right; font-size: 13px; color: #6d5b1d; margin-bottom: 25px; display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; }
+        .agreement-box input { margin-top: 3px; transform: scale(1.2); cursor: pointer; }
+        
+        .btn-group { display: flex; gap: 15px; justify-content: center; }
+        .btn-action { padding: 12px 35px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; flex: 1; }
+        .btn-agree { background-color: #2e7d32; color: #fff; }
+        .btn-agree:hover { background-color: #1b5e20; }
+        .btn-disagree { background-color: #c62828; color: #fff; }
+        .btn-disagree:hover { background-color: #b71c1c; }
+
+        /* 2. شاشة اختيار صف الامتحانات */
+        .grid-container { width: 100%; max-width: 1200px; display: none; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; padding: 20px 0; animation: fadeIn 0.5s ease; }
+        .exam-card { background: #fff; border-radius: 16px; padding: 25px 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); text-align: center; border-top: 5px solid #004b87; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; }
+        .exam-card:hover { transform: translateY(-5px); box-shadow: 0 12px 22px rgba(0,0,0,0.25); }
+        .exam-card h3 { font-size: 45px; color: #004b87; font-weight: bold; margin-bottom: 5px; }
+        .exam-card h4 { font-size: 14px; color: #333; font-weight: bold; margin-bottom: 15px; letter-spacing: 0.5px; }
+        .exam-meta { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .badge { background: #e0eefe; color: #004b87; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .badge-gold { background: #fdf8e2; color: #b28900; }
+        .exam-code { font-size: 11px; color: #888; font-weight: bold; }
+
+        /* 3. شاشة المراجعة الكبرى المقسمة موازياً */
+        .exam-interface { width: 100%; max-width: 1400px; display: none; gap: 20px; align-items: flex-start; animation: fadeIn 0.5s ease; }
+        .panel-right { flex: 1; background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-height: 75vh; overflow-y: auto; border-top: 5px solid #004b87; }
+        .panel-right h3 { color: #004b87; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; font-size: 18px; }
+        .panel-right p { line-height: 1.8; font-size: 15px; text-align: justify; margin-bottom: 15px; color: #333; }
+        
+        .panel-left { flex: 1; background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid #d4af37; min-height: 450px; display: flex; flex-direction: column; justify-content: space-between; }
+        .progress-container { background: #eee; height: 6px; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { background: #d4af37; height: 100%; width: 0%; transition: width 0.3s ease; }
+        
+        .question-card { display: none; }
+        .question-card.active { display: block; animation: fadeIn 0.4s ease; }
+        .q-number { font-size: 13px; color: #b28900; font-weight: bold; margin-bottom: 8px; }
+        .q-text { font-size: 16px; font-weight: bold; color: #004b87; margin-bottom: 20px; line-height: 1.5; }
+        
         .options-list { list-style: none; }
-        .option-item { margin-bottom: 10px; display: flex; align-items: center; }
-        .option-item input { margin-left: 10px; transform: scale(1.2); cursor: pointer; }
-        .option-item label { font-size: 15px; cursor: pointer; width: 100%; padding: 5px; border-radius: 4px; }
-        .option-item label:hover { background-color: #ebf8ff; }
+        .option-item { background: #f9f9f9; border: 2px solid #f0f0f0; padding: 12px 18px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; font-size: 14px; }
+        .option-item:hover { background: #f0f6ff; border-color: #004b87; }
+        .option-item.selected { background: #e0eefe; border-color: #004b87; font-weight: bold; }
         
-        /* زر الإرسال */
-        .submit-btn {
-            background-color: #3182ce; color: white; padding: 12px 30px; font-size: 16px; font-weight: bold;
-            border: none; border-radius: 5px; cursor: pointer; display: block; margin: 20px auto; transition: background 0.3s;
-        }
-        .submit-btn:hover { background-color: #2b6cb0; }
-        
-        /* شاشة قفل النظام عند محاولة الغش أو التصوير */
-        #lock-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(229, 62, 62, 0.98); color: white; text-align: center;
-            justify-content: center; align-items: center; flex-direction: column; z-index: 9999;
-        }
-        #lock-screen h1 { font-size: 40px; margin-bottom: 20px; }
-        #lock-screen p { font-size: 20px; }
+        .nav-controls { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
+        .btn-nav { padding: 10px 25px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; }
+        .btn-back { background: #6c757d; color: #fff; }
+        .btn-next { background: #004b87; color: #fff; }
+        .btn-finish { background: #28a745; color: #fff; display: none; }
+
+        /* 4. لوحة النتيجة الختامية */
+        .score-panel { display: none; background: #fff; width: 100%; max-width: 550px; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; border-top: 6px solid #28a745; animation: fadeIn 0.5s ease; }
+        .score-circle { width: 140px; height: 140px; border-radius: 50%; border: 6px solid #28a745; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto; font-size: 30px; font-weight: bold; color: #28a745; }
+        .score-circle span { font-size: 13px; color: #666; font-weight: normal; margin-top: 2px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @media print { body { display: none; } }
+        body { user-select: none; -webkit-user-select: none; }
+        .footer-banner { background: #881b1b; color: #fff; text-align: center; padding: 8px; font-size: 13px; font-weight: bold; width: 100%; letter-spacing: 0.5px; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;" onkeydown="return false;">
 
-    <!-- شاشة التحذير المقفلة -->
-    <div id="lock-screen">
-        <h1>⚠️ تم رصد محاولة خروج أو تصوير للشاشة!</h1>
-        <p>تم قفل الامتحان وإرسال تقرير بالحادثة إلى معلمة المادة.</p>
-    </div>
-
-    <!-- ترويسة الاختبار التابع للمدرسة والوزارة -->
+    <!-- الترويسة المدرسية والوزارية الصارمة -->
     <div class="header-section">
-        <div class="school-info">
-            <p>مدرسة ميربح للحلقة الثانية بنات ج2</p>
-            <p>مادة: اللغة العربية</p>
-        </div>
+        <div class="header-logo"><strong>دولة الإمارات العربية المتحدة<br>وزارة التربية والتعليم</strong></div>
         <div class="header-title">
-            <h1>وزارة التربية والتعليم - دولة الإمارات العربية المتحدة</h1>
-            <h2>الاختبار التجريبي الثاني (عاشق الجدار القديم)</h2>
-            <p>للفصل الدراسي الثالث للعام 2025-2026</p>
+            <h2>مدرسة مربح للتعليم الأساسي ح2 - بنات</h2>
+            <p>نظام المراجعات والامتحانات التجريبية التفاعلية الموازية والمحمية</p>
         </div>
+        <div class="header-logo"><strong>المادة: اللغة العربية<br>العام الدراسي: 2025 - 2026م</strong></div>
     </div>
 
-    <!-- حاوية الامتحان المقسمة موازياً -->
-    <div class="main-container">
+    <!-- حاوية التطبيق المركزية -->
+    <div class="app-container">
         
-        <!-- الجانب الأيمن: نص القصة -->
-        <div class="story-side">
-            <h3>قصة: عاشق الجدار القديم</h3>
-            <p>في اللَّيْلِ الموحِشِ العَتِمِ كانوا يَتمترسونَ خَلْفَ الأَكْياسِ الرَّمْلِيَّةِ على الشّاطِئِ، أَيْديهمُ مُمْسِكَةٌ بِالبَنادِقِ العَتيقَةِ (أَبو فَتيل) وَبِالسُّيوفِ الحادَّةِ، وَوَنيسُهُمُ الوَحيدُ موسيقا تَبْعَـثُـها الرِّياحُ الخَريفِيَّةُ عَبْرَ أَمْواجِ البَحْرِ. وَهُناكَ بَعيدًا بَعيدًا تَنْتَصِبُ عَلى الرِّمالِ البُيوتُ السَّعَفِيَّةُ وَالطّينِيَّةُ -وَآخِرُ أَطْلالِها هذا الجِدارُ- تَخْتَزِنُ صَدى البُكاءِ وَالعَويلِ عَلى القَتْلى وَالجَرْحى بِتِلْكَ النّيرانِ، يَرْميها ذلِكَ الشَّيْءُ المُخيفُ الرّابِضُ في كَبِدِ البَحْرِ.</p>
-            <br>
-            <p>الحَرائِقُ في كُلِّ مَكانٍ وَمَعَ النّيرانِ كانَ الوَحْشُ يُرْسِلُ جَراثيمَهُ بَيْنَ الحينِ وَالآخَرِ، عَبْرَ قَوارِبَ تَجْديفٍ تَتَسَلَّلُ إِلى الشّاطِئِ، وَتَنْشُرُ الذُّعْرَ وَالخَوْفَ. الرِّجالُ صامِدونَ يُحَرِّكُهُمْ مَصيرٌ واحِدٌ، فَالشَّهادَةُ مَطْلَبٌ في مُواجَهَـةِ الغَريبِ الّذي جاءَ يَنْهَبُ وَيَسْرِقُ اِبْتِسامَـةً تَأْبى أَنْ تُفارِقَ الأَرْضَ، رائِحَتُها عَطاءٌ دائِمٌ، وَمِياهُها خُبْزٌ وَحِكاياتٌ خالِدَةٌ، وَدُروبُها خُطُواتُ العاشِقينَ في اللَّيالي القَمرِيَّةِ.</p>
-            <br>
-            <p>وَفي تِلْكَ اللَّحْظَةِ وَصَلْتُ لأهنَأَ بِالرّاحَةِ بَعْدَ سَهَرِ اللَّيالي في الحُفَرِ الرَّطْبَةِ.. عَبَرْتُ الزُّقاقَ الضَّيِّقَ.. اِقْتَرَبْتُ، العَويلُ يَزْدادُ وُضوحًا، وَالصُّراخُ يَتَعالى. امْتَلأَتِ السِّكَكُ السَّعفِيَّةُ بِالرَّوائِحِ العَفِنَةِ.. تَكاثَرَتِ الأَدْخِنَةُ.. وَغَطَّتْ سُحبُها الحيَّ كلَّه. أبدتِ الكِلابُ اسْتِياءها لِلأَعْمالِ القَذِرَةِ، وَهِيَ تَجْري عَبْرَ الأَزِقَّـةِ بِاتِّجاهِ ذلِكَ الوَحْشِ. أَحْسَسْتُ بِالدَّمِ يَتَصاعَدُ في عُروقي. إِنَّهُمْ هُناكَ..لَقَدْ غَطَّيْناهُمْ..مادَتِ الأَرْضُ مِنْ تَحْتي..اِتَّكَأْتُ عَلى أَكْتافِ مَنْ كانَ بِجانِبي..</p>
+        <!-- الشاشة الأولى: صفحة تسجيل بيانات الطالبة والاتفاقية -->
+        <div class="card-panel" id="step1-login">
+            <div style="width:70px; height:70px; background:#fdf8e2; border:2px solid #d4af37; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; color:#d4af37; font-size:24px; font-weight:bold;">UA</div>
+            <h1>مراجعة اللغة العربية الشاملة</h1>
+            <div class="subtitle">حلقة ثانية — الفصل الدراسي الثالث — جميع الشعب</div>
+            
+            <div class="form-group">
+                <label>الاسم الكامل للطالبة (FULL NAME)</label>
+                <input type="text" id="studentName" class="form-control" placeholder="اكتبي اسمكِ الثلاثي هنا..." autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label>الصف والشعبة (YOUR GRADE)</label>
+                <select id="studentGrade" class="form-control">
+                    <option value="">-- اضغطي واختاري صفكِ الحالي --</option>
+                    <option value="الصف الثامن - شعبة 1">الصف الثامن - شعبة 1</option>
+                    <option value="الصف الثامن - شعبة 2">الصف الثامن - شعبة 2</option>
+                    <option value="الصف الثامن - شعبة 3">الصف الثامن - شعبة 3</option>
+                    <option value="الصف الثامن - شعبة 4">الصف الثامن - شعبة 4</option>
+                    <option value="الصف الثامن - شعبة 5">الصف الثامن - شعبة 5</option>
+                </select>
+            </div>
+            
+            <div class="agreement-box">
+                <input type="checkbox" id="agreeCheck">
+                <div>هل توافقين على أداء هذا الاختبار التجريبي بجدية وإرسال نتيجتكِ النهائية تلقائياً وبشكل مباشر إلى سجل درجات المعلمة؟</div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-action btn-agree" onclick="validateAndGoToGrid()">نعم، موافقة ودخول</button>
+                <button class="btn-action btn-disagree" onclick="alert('يجب الموافقة لدخول نظام الامتحانات التجريبية.')">لا، غير موافقة</button>
+            </div>
         </div>
-        
-        <!-- الجانب الأيسر: أسئلة مأخوذة من اختبار المعلمة دعاء -->
-        <div class="questions-side">
-            <form id="quizForm">
+
+        <!-- الشاشة الثانية: لوحة اختيار مادة الامتحان والصف المخصص للبطاقات -->
+        <div class="grid-container" id="step2-grid">
+            <!-- سيتم توليد 20 بطاقة مراجعة تفاعلية بشكل مبهر هنا -->
+        </div>
+
+        <!-- الشاشة الثالثة: واجهة الامتحان الكبرى المقسمة موازياً لليمين واليسار -->
+        <div class="exam-interface" id="step3-exam">
+            
+            <!-- الجزء الأيمن الثابت: مقتطفات ونصوص القراءة والتحليل -->
+            <div class="panel-right" id="readingTextPanel">
+                <!-- النصوص ستتغير تلقائياً حسب فئة السؤال النشط -->
+            </div>
+            
+            <!-- الجزء الأيسر المتحرك: الأسئلة صفحة بصفحة -->
+            <div class="panel-left">
+                <div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="examProgress"></div>
+                    </div>
+                    <div id="questionsContainer">
+                        <!-- سيتم حقن الـ 25 سؤالاً الوزارياً هنا عبر السكريبت -->
+                    </div>
+                </div>
                 
-                <!-- السؤال الأول -->
-                <div class="question-block">
-                    <p class="question-text">1. ما المشهد الذي تصفه الفقرة الأولى في القصة؟</p>
-                    <div class="options-list">
-                        <div class="option-item"><input type="radio" name="q1" id="q1a"><label for="q1a">أ- مشهدٌ للنصر.</label></div>
-                        <div class="option-item"><input type="radio" name="q1" id="q1b"><label for="q1b">ب- مشهدٌ للفرح.</label></div>
-                        <div class="option-item"><input type="radio" name="q1" id="q1t"><label for="q1t">ت- مشهدٌ للوداع.</label></div>
-                        <div class="option-item"><input type="radio" name="q1" id="q1th"><label for="q1th">ث- مشهدٌ للحرب.</label></div>
-                    </div>
+                <div class="nav-controls">
+                    <button class="btn-nav btn-back" id="backBtn" onclick="moveQuestion(-1)" disabled>السابق</button>
+                    <button class="btn-nav btn-next" id="nextBtn" onclick="moveQuestion(1)">التالي</button>
+                    <button class="btn-nav btn-finish" id="finishBtn" onclick="showFinalScore()">إنهاء المراجعة وإظهار النتيجة</button>
                 </div>
-
-                <!-- السؤال الثاني -->
-                <div class="question-block">
-                    <p class="question-text">2. بناءً على فهمك لأحداث القصة، ما المعنى الإجمالي الصحيح لها؟</p>
-                    <div class="options-list">
-                        <div class="option-item"><input type="radio" name="q2" id="q2a"><label for="q2a">أ- الوقوف في وجه العدو مهما كلف الأمر وعدم الاستسلام للظلم.</label></div>
-                        <div class="option-item"><input type="radio" name="q2" id="q2b"><label for="q2b">ب- بكاء القتلى، والعويل على المفقودين في الحروب.</label></div>
-                        <div class="option-item"><input type="radio" name="q2" id="q2t"><label for="q2t">ت- الحرص على اقتناء أدوات بحرية قديمة كالشاحوف.</label></div>
-                    </div>
-                </div>
-
-                <!-- السؤال الثالث -->
-                <div class="question-block">
-                    <p class="question-text">3. "مادَتِ الأرضُ مِنْ تَحْتِي" - ما الدلالة التعبيرية الإيحائية لهذه العبارة؟</p>
-                    <div class="options-list">
-                        <div class="option-item"><input type="radio" name="q3" id="q3a"><label for="q3a">أ- اختلال توازنه وصدمته الشديدة.</label></div>
-                        <div class="option-item"><input type="radio" name="q3" id="q3b"><label for="q3b">ب- سيطرة الخوف عليه.</label></div>
-                        <div class="option-item"><input type="radio" name="q3" id="q3t"><label for="q3t">ت- تزلزل الأرض الفعلي.</label></div>
-                    </div>
-                </div>
-
-                <!-- السؤال الرابع -->
-                <div class="question-block">
-                    <p class="question-text">4. ما الفكرة الرئيسة لقصة عاشق الجدار القديم؟</p>
-                    <div class="options-list">
-                        <div class="option-item"><input type="radio" name="q4" id="q4a"><label for="q4a">أ- التشبث بالأرض في مواجهة العدوان وتحويل الفقد إلى صمود وبطولة.</label></div>
-                        <div class="option-item"><input type="radio" name="q4" id="q4b"><label for="q4b">ب- وصف جمال السواحل البحرية ليلاً.</label></div>
-                        <div class="option-item"><input type="radio" name="q4" id="q4t"><label for="q4t">ت- التعرف على حياة الصيادين قديماً.</label></div>
-                    </div>
-                </div>
-
-                <button type="button" class="submit-btn" onclick="alert('تم استلام إجاباتكِ بنجاح!')">تسليم الامتحان</button>
-            </form>
+            </div>
         </div>
+
+        <!-- الشاشة الرابعة والأخيرة: لوحة عرض النتيجة النهائية للطالبة مع التوثيق -->
+        <div class="score-panel" id="step4-score">
+            <h2 style="color: #28a745; margin-bottom: 10px;">تم إرسال وحفظ النتيجة بنجاح!</h2>
+            <p style="color:#555; font-size:15px;" id="certifyText"></p>
+            <div class="score-circle" id="scoreDisplay">0/25 <span>درجة</span></div>
+            <h3 id="appraisalMsg" style="color:#004b87; margin-bottom: 20px;">عمل ممتاز!</h3>
+            <p style="color:#777; font-size:12px;">نظام الامتحان محمي وتلقائي. يرجى تصوير هذه الشاشة لإثبات الحضور للمعلمة.</p>
+        </div>
+
     </div>
 
-    <!-- نظام الحماية وإصدار الصوت المانع للغش والتصوير -->
+    <!-- شريط الحماية السفلي الثابت لمنع مغادرة التبويب -->
+    <div class="footer-banner">مطلوب وضع ملء الشاشة الفوري (Fullscreen Required). ابقَ داخل علامة التبويب الحالية لحماية الجلسة.</div>
+
     <script>
-        // إنشاء تأثير صوتي عالي لإنذار الطالبة
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playWarningSound() {
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // تردد صوت الإنذار
-            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 1.5); // يستمر الصوت لمدة ثانية ونصف
+        // بنك الأسئلة والمراجعة الوزارية المعدلة المكون من 25 سؤالاً
+        const examQuestions = [
+            // أسئلة المقتطف القصير (1 - 5)
+            { type: "short", q: "حددي الحدث الرئيس الذي يطور الحبكة في المقتطف القصير السابق:", o: ["تطلع الطفلة إلى أشجار النخيل المتطلعة للعلياء.", "وقوف الطفلة تتهندم أمام المرآة بخوف وقلق من عدم لقاء صديقاتها الموعودات.", "نزول الفتيات من الحافلة بصحبة المعلمات.", "مساعدة الفتاة لأمها في أعمال المنزل."], a: 1 },
+            { type: "short", q: "ما هو موقف شخصية الطفلة تجاه الفتيات (بنات المدارس) اللواتي تراقبهن؟", o: ["موقف عدائي ممتلئ بالحسد والرفض لهن.", "موقف رغبة شديدة في التقرب والاتحاد معهن، ممزوج بالخوف والتردد من صدّهن لها.", "عدم الاهتمام الكامل بوجودهن والاستمرار باللعب بمفردها.", "الغضب الشديد من ملابسهن وألعابهن."], a: 1 },
+            { type: "short", q: "بمَ تشعر الطفلة عندما انقبض قلبها وهي تظن أن الجمعة ستمر دون صُويحبات؟", o: ["الندم الشديد على شراء الثوب الجديد.", "الخوف والوجل والحرقة النفسية من البقاء وحيدة خلف حاجز العزلة.", "اليأس التام والتفكير في تمزيق ملابسها الزاهية.", "الشوق الجارف للعودة إلى المدرسة البعيدة."], a: 1 },
+            { type: "short", q: "ما دلالة عبارة 'أَبْرَمَتْ مَعَهُنَّ صَدَاقَةً وَأُخُوَّةً دُونَ عِلْمِهِنَّ' في المقتطف؟", o: ["توحي بوجود اتفاق سرّي مكتوب بين الفتيات.", "توحي بفرط عاطفة الطفلة، وحاجتها الشديدة للانتماء، وعيشها الصداقة في مخيلتها من طرف واحد لشدة عزلتها.", "توحي بخداع الطفلة للفتيات ومحاولة التجسس عليهن.", "توحي ببعد المسافة المادية بين بيتها والمكان الأخضر."], a: 1 },
+            { type: "short", q: "حددي التركيب الإضافي (المضاف والمضاف إليه) في عبارة 'وَأَسْدِلَ سِتَارُ الوَاقِعِ عَلَى خَيَالِهَا':", o: ["أسدِلَ ستارُ.", "سِتَارُ الوَاقِعِ.", "على خيالها.", "الواقع على."], a: 1 },
+            
+            // أسئلة النص المعلوماتي (6 - 15)
+            { type: "info", q: "حددي الفكرة الرئيسة في النص المعلوماتي السابق:", o: ["الأثر البيئي لبناء العمارات الحديثة على الشواطئ الساحلية.", "الأهمية الاقتصادية والثقافية للصيد التقليدي والبحر في مجتمع الإمارات قديماً وحديثاً.", "مقارنة بين أدوات الصيد في الخليج العربي والبحار العالمية.", "المهارات الرياضية الحديثة في رياضة الغوص."], a: 1 },
+            { type: "info", q: "ما الفكرة التي ركزت عليها الفقرة الثانية من النص؟", o: ["أسعار السفن الخشبية في الأسواق.", "الصيد كمدرسة للقيم الإنسانية والجهود الحالية للحفاظ عليه كإرث.", "تاريخ اختراع الشباك القطنية.", "هجرة الطيور البحرية في فصل الخريف."], a: 1 },
+            { type: "info", q: "حددي المعلومة 'غير الصحيحة' وفقاً لما ورد في النص المعلوماتي:", o: ["بلغت نسبة العاملين في الصيد قديماً نحو 85%.", "مهنة الصيد قديماً كانت ترفاً وتسلية خالية من المشقة والتعب.", "تصل نسبة جهود استدامة البيئة لحماية الصيد إلى 95%.", "يعد اللنج والشاحوف من سفن الصيد التقليدية القديمة."], a: 1 },
+            { type: "info", q: "ما هي النسبة المئوية للسكان الذين اعتمدوا على الغوص والصيد في البيئات الساحلية قديماً؟", o: ["40%.", "85%.", "95%.", "20%."], a: 1 },
+            { type: "info", q: "ما معنى كلمة 'الركيزة' في عبارة (شكل البحر الركيزة الأساسية للحياة)؟", o: ["العائق والصعوبة.", "الأساس والدعامة الجوهرية.", "التحول المفاجئ.", "النهاية والختام."], a: 1 },
+            { type: "info", q: "كم تبلغ نسبة استدامة حماية البيئة الموجهة لصون هذا الإرث التقليدي اليوم؟", o: ["85%.", "40%.", "95%.", "10%."], a: 2 },
+            { type: "info", q: "بناءً على النص، بماذا وصفت البيئة البحرية وتأثيرها على وجوه الأجداد؟", o: ["مياه عذبة تمحو آثار السنين والتشققات.", "بحر عنيد وجبار ترك أمواجه وملحه شروخاً غائرة في لحم جباههم.", "شواطئ رملية ناعمة خالية من الصخور والأعشاب.", "مساحات ترفيهية لا تتطلب جهداً أو كفاحاً."], a: 1 },
+            { type: "info", q: "ما هو دور الأجيال الحالية والدولة تجاه هذا التاريخ البحري؟", o: ["تركه ونسيانه بالكامل والتركيز على التكنولوجيا فقط.", "حمايته وصونه كإرث ثقافي يربط الحاضر بالماضي العريق.", "تحويل كل السفن التقليدية إلى مصانع حديدية.", "منع الصيد نهائياً في كافة الشواطئ."], a: 1 },
+            { type: "info", q: "حددي العبارة التي تضمنت 'تشبيهاً' ممّا ورد في النص المعلوماتي:", o: ["شكل البحر الركيزة الأساسية للحياة.", "فالبحر يوصف بأنه جبار لا يلين يواجهه بحارة أشداء.", "تشير الدراسات التاريخية إلى نسب معينة.", "تبذل الدولة جهوداً هائلة بنسبة استدامة."], a: 1 },
+            { type: "info", q: "ما القيمة المستفادة والرسالة التي يوجهها النص للقارئ؟", o: ["تفضيل حياة المدن الصاخبة على حياة السواحل.", "تقدير كفاح الأجداد المتعبين والاعتزاز بالهوية والإرث البحري الأصيل.", "إهمال الحرف اليدوية والتقليدية القديمة.", "تشجيع السفر الدائم للخارج وترك الأوطان."], a: 1 },
+            
+            // أسئلة المقتطف الطويل وقصص خليل وجمعان (16 - 25)
+            { type: "long", q: "أي من الأحداث الآتية جاء 'أولاً' بحسب ترتيبها الزمني في الرواية والقصة؟", o: ["قفز مبارك من نومه مرعوباً وتساءله عمن هناك.", "التمترس خلف الأكياس الرملية على الشاطئ في الليل الموحش العتم.", "البحث عن السكين بين أكوام الشباك في الخن.", "سحب المرساء وتثبيت المجاديف ودفع الشاحوف."], a: 1 },
+            { type: "long", q: "بمَ تشعر شخصية 'مبارك' في اللحظة التي شهر فيها أبو عبد الله السكين في وجهه؟", o: ["الغضب الشديد والرغبة في القتال.", "الخوف، والارتعاش، والتراجع للخلف بذعر وذهول.", "الطمانينة الكاملة والضحك العالي.", "الشوق لمغادرة الشاطئ فوراً."], a: 1 },
+            { type: "long", q: "كيف تفسرين تصرف 'أبو عبد الله' عندما أصر على دفع الشاحوف للرحيل ومواجهة الوحش الرابض؟", o: ["يعبر عن رغبة شخصية في الانتحار والتخلص من أعباء الحياة.", "ينبع من روحه الوطنية، وصموده الثائر، ورفضه للاستسلام أمام العدو (الوحش) الذي دمر بلده وحولها إلى أطلال.", "دافعها كان الطمع في نهب قوارب التجديف التابعة للعدو.", "تصرف عشوائي ناتج عن الهيستيريا وفقدان الذاكرة بسبب رصاص البنادق."], a: 1 },
+            { type: "long", q: "ما أثر رؤية الدمار والحرائق والجثث المحترقة على أفعال شخصية 'أبو عبد الله' مستقبلاً؟", o: ["دفعته الأحداث الأليمة للبكاء الصامت ثم التحرك العازم للثورة وتدمير سفينة العدو ليلاً دون تردد.", "جعلته يقرر مغادرة الحي الحزين والهرب عبر الزقاق الضيق.", "دفعته لإلقاء بندقيته العتيقة (أبو فتيل) في أعماق البحر.", "جعلته يستسلم للنوم والراحة التامة فوق الأكياس الرملية."], a: 0 },
+            { type: "long", q: "ما الصفة المعنوية والنفسية الأبرز التي تميزت بها شخصية 'خليل' في قصة الوجه الآخر عند إصراره على الكتابة؟", o: ["الكسل والخوف من أصحاب السلطة والنفوذ.", "الإصرار، والالتزام بقضايا الكادحين والمتعبين، والشجاعة الفكرية رغم إعاقته الجسدية.", "الطيش والرغبة في جمع الأموال الطائلة من المقالات.", "التردد الدائم والاعتماد الكلي على آراء الآخرين دون تفكير."], a: 1 },
+            { type: "long", q: "ما الإيحاء والدلالة التعبيرية في قوله: 'رائحتها عطاء دائم، ومياهها خبز وحكايات خالدة'؟", o: ["توحي بالفقر الشديد والجوع الذي يعاني منه أهل الساحل.", "توحي بالارتباط المصيري بالأرض، والخير المستمر، وعمق الأصالة التاريخية للمكان.", "توحي برغبة البحارة في فتح مخابز جديدة على الشاطئ.", "توحي بانتهاء الخريف وقرب فصل الصيف."], a: 1 },
+            { type: "long", q: "ما التقنية القصصية المستخدمة في قصة (الإمية) عندما كان جمعان 'يتذكر أيام زمان مَضت إلى غير رجعة وكيف كان يلبس الصديري واللاس'؟", o: ["الحوار الخارجي الصاخب بينه وبين أطفال المدارس.", "الاسترجاع الفني (الفلاش باك) والذاكرة السردية للمقارنة بين الماضي والحاضر.", "الحوار المسرحي المباشر مع زوجته العجوز.", "الوصف الجغرافي الخارجي للشركات الحديثة."], a: 1 },
+            { type: "long", q: "حددي الجملة التي اشتملت على 'ضمير جر متصل' (متصل باسم أو بحرف جر) ممّا يأتي:", o: ["انطلقَ قارب الصيد الصغير.", "قفز مبارك من نومِـهِ مرعوباً.", "أخذتُ أبحث عن سكين.", "الرجال صامدون خلف الأكياس."], a: 1 },
+            { type: "long", q: "ما نوع العلاقة التي تربط بين شخصية 'خليل' وأمه في قصة (الوجه الآخر)؟", o: ["علاقة صراع مستمر وجدال حول كتابة المقالات.", "علاقة ملؤها الدعم، والمحبة العميقة، والإلهام النفسي؛ حيث يرى كلامها كتاباً يحفظ أسراره.", "علاقة رسمية مبنية على قضاء الحوائج المنزلية فقط.", "علاقة جفاء وتجاهل لنصائحها ودعواتها."], a: 1 },
+            { type: "long", q: "ما الكلمة التي تعد 'ضداً' لكلمة (الرَّثَّتَيْنِ) في عبارة قصة الإمية: 'انْتَعَلَ جَمْعانُ نَعْلَيْهِ الجِلْدِيَّتَيْنِ الرَّثَّتَيْنِ'؟", o: ["القديمتين الباليتين.", "الجديدتين / الأنيقتين.", "الثقيلتين الواسعتين.", "الممزقتين المتسختين."], a: 1 }
+        ];
+
+        // مراجع ونصوص القراءة والتحليل الثابتة لليمين
+        const readingTexts = {
+            short: `<h3>النص الأول المرفق: قصة "أحلام طفلة" للكاتبة صالحة غابش</h3>
+                    <p>"اسْتَسْلَمَتْ لِمُدَاعَبَاتِ الفَرَحِ الَّذِي اجْتَاحَ نَفْسَهَا... وَهِيَ وَاقِفَةٌ أَمَامَ المِرْآةِ تُهَنْدِمُ حَالَهَا... وَتَطْمَئِنُّ عَلَى أَنَاقَتِهَا... عَلَى ثَوْبِهَا الجَدِيدِ المُكْتَنِزِ بِالأَلْوَانِ الزَّاهِيَةِ... وَلَكِنْ... يَنْقَبِضُ قَلْبُهَا قَلِيلاً، تَخَافُ أَلا تَلْتَقِيَ بِهِنَّ... بِصَدِيقَاتِهَا اللَّوَاتِي أَبْرَمَتْ مَعَهُنَّ صَدَاقَةً وَأُخُوَّةً دُونَ عِلْمِهِنَّ... تَخَافُ أَنْ تَعُودَ بِثَوْبِهَا الجَمِيلِ هَذَا دُونَ أَنْ تُرِيَهُ لَهُنَّ لِتَقُولَ مِنْ خِلَالِهِ بِأَنَّهَا تَمْلِكُ أَيْضاً ثَوْباً جَمِيلاً مِثْلَهُنَّ."</p>
+                    <p style='color:#777; font-size:13px;'>تابع الأسئلة على اليسار واضغطي التالي للانتقال بين أسئلة المقتطف.</p>`,
+            info: `<h3>النص الثاني المرفق: النص المعلوماتي الخارجي</h3>
+                   <p><strong>"الصيد التقليدي ومكانة البحر في مجتمع الإمارات قديماً"</strong></p>
+                   <p>شكّل البحر في دولة الإمارات العربية المتحدة قديماً الركيزة الأساسية للحياة الاقتصادية والاجتماعية، حيث اعتمد الأجداد على الغوص وبناء سفن الصيد التقليدية مثل (اللنج) و(الشاحوف) لاستخراج خيرات الخليج وتأمين لقمة العيش. وتشير الدراسات التاريخية إلى أن نسبة القوى العاملة في مهنة الصيد والغوص في البيئات الساحلية قبل ظهور النفط بلغت نحو 85% من السكان.</p>
+                   <p>ولم تكن مهنة الصيد مجرد عمل تجاري، بل كانت مدرسة لتعليم الصبر والشجاعة؛ فالبحر يوصف بأنه جبار لا يلين يواجهه بحارة أشداء. واليوم، تبذل الدولة جهوداً هائلة بنسبة استدامة بيئية عالية تصل إلى 95% لحماية الصيد التقليدي كإرث ثقافي يربط الأجيال الحديثة بماضي الآباء المتعبين الذين حفرت أمواج الملح شروخاً غائرة في جباههم.</p>`,
+            long: `<h3>النص الثالث المرفق: مقتطف قصة "عاشق الجدار القديم" والوجه الآخر</h3>
+                   <p>"في اللَّيْلِ الموحِشِ العَتِمِ كانوا يَتمترسونَ خَلْفَ الأَكْياسِ الرَّمْلِيَّةِ على الشّاطِئِ، أَيْديهمُ مُمْسِكَةٌ بِالبَنادِقِ العَتيقَةِ... وَصَلْتُ الشّاطِئَ.. تَراءى لي الشّاحوفُ يتَراقَصُ مَعَ الأَمْواجِ الصَّغيرَةِ... قَفَزَ مُبارَكٌ مِنْ نَوْمِهِ مَرْعوبًا عَلى أَثَرِ ارْتِطامِ الشّاحوفِ بِرِمالِ الشّاطِئِ: مَنْ... مَنْ هُناكَ؟ وَثَبْتُ وَأَخَذْتُ أَبْحَثُ عَنْ سِكّينٍ بَيْنَ أَكْوامِ الشّباك... شَهَرْتُها في وَجْهِـهِ.. تَراجَعَ إِلى الخَلْفِ خائِفًا: أَبو عَبْدِ اللّهِ ماذا جَرَى؟ قلت له: لا تَخَفْ يا مُبارَك.. أَتَرى ذلِكَ الوَحْشَ الَّذي اِنْهالَ عَلَيْنا بِنيرانِهِ المُحْرِقَةِ.. سَيَرْحَلُ اللَّيْلَـةَ. سَكَتَ مُبارَكٌ وَلَمْ يَرُدَّ بِكَلِمَـةٍ واحِدَةٍ، وكأنَّهُ شَعَرَ أَنَّ الأَمْرَ لا يَعْدو أَنْ يَكونَ دُعابَةً عابِرَةً."</p>`
+        };
+
+        let currentQIndex = 0;
+        let selectedAnswers = new Array(examQuestions.length).fill(null);
+        let globalStudentName = "";
+        let globalStudentGrade = "";
+
+        // التأكد من تسجيل البيانات والانتقال إلى لوحة بطاقات الصف الشبيهة بالصورة
+        function validateAndGoToGrid() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const gradeSelect = document.getElementById('studentGrade').value;
+            const agreeCheck = document.getElementById('agreeCheck').checked;
+            
+            if(!nameInput || nameInput.length < 5) {
+                alert("يرجى كتابة الاسم الكامل للطالبة بشكل ثلاثي صحيح.");
+                return;
+            }
+            if(!gradeSelect) {
+                alert("يرجى اختيار الصف والشعبة المخصصة لكِ.");
+                return;
+            }
+            if(!agreeCheck) {
+                alert("يجب تفعيل خيار الموافقة لإرسال الدرجات للدخول.");
+                return;
+            }
+            
+            globalStudentName = nameInput;
+            globalStudentGrade = gradeSelect;
+            
+            document.getElementById('step1-login').style.display = 'none';
+            const grid = document.getElementById('step2-grid');
+            grid.style.display = 'grid';
+            
+            // توليد البطاقات التفاعلية العشرون المطابقة لشبكة الصورة الثالثة المرفقة
+            grid.innerHTML = "";
+            for(let i = 1; i <= 20; i++) {
+                const card = document.createElement('div');
+                card.className = "exam-card";
+                // جعل البطاقة رقم 1 هي المخصصة للصف الحالي لفتح الامتحان
+                card.onclick = () => startSpecificExam(i);
+                card.innerHTML = `
+                    <h3>${i}</h3>
+                    <h4>SAMPLE EXAM PRACTICE</h4>
+                    <div class="exam-meta">
+                        <span class="badge">5 Sections</span>
+                        <span class="badge badge-gold">25 Marks</span>
+                    </div>
+                    <div class="exam-code">${globalStudentGrade} - B1.1</div>
+                `;
+                grid.appendChild(card);
+            }
         }
 
-        // 1. تفعيل نظام منع تصوير الشاشة (منع اختصارات لوحة المفاتيح واكتشاف محاولة الطباعة)
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p') || (e.metaKey && e.shiftKey && e.key === '4')) {
-                e.preventDefault();
-                triggerSecurityLock();
+        // بدء تشغيل الامتحان عند النقر على البطاقة المحددة
+        function startSpecificExam(examNum) {
+            if(examNum !== 1) {
+                alert(`هذا النموذج رقم (${examNum}) غير مفعل اليوم، يرجى الضغط على النموذج رقم (1) المخصص لمراجعة شعب الصف الثامن الحالية.`);
+                return;
             }
-        });
+            document.getElementById('step2-grid').style.display = 'none';
+            document.getElementById('step3-exam').style.display = 'flex';
+            buildQuestionsHTML();
+            renderCurrentQuestion();
+        }
 
-        // 2. تفعيل نظام اكتشاف خروج الطالبة من صفحة الامتحان (الذهاب لعلامة تبويب أخرى)
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                triggerSecurityLock();
+        // بناء وحقن الأسئلة الـ 25 داخل الحاوية صفحة بصفحة
+        function buildQuestionsHTML() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = "";
+            examQuestions.forEach((item, qIdx) => {
+                const qCard = document.createElement('div');
+                qCard.className = "question-card";
+                qCard.id = `question-idx-${qIdx}`;
+                
+                const qNumDiv = document.createElement('div');
+                qNumDiv.className = "q-number";
+                qNumDiv.innerText = `السؤال التقييمي رقم ${qIdx + 1} من أصل 25:`;
+                
+                const qTextDiv = document.createElement('div');
+                qTextDiv.className = "q-text";
+                qTextDiv.innerText = item.q;
+                
+                const uList = document.createElement('ul');
+                uList.className = "options-list";
+                
+                item.o.forEach((opt, oIdx) => {
+                    const li = document.createElement('li');
+                    li.className = "option-item";
+                    li.innerText = opt;
+                    li.id = `opt-item-${qIdx}-${oIdx}`;
+                    li.onclick = () => saveStudentAnswer(qIdx, oIdx);
+                    uList.appendChild(li);
+                });
+                
+                qCard.appendChild(qNumDiv);
+                qCard.appendChild(qTextDiv);
+                qCard.appendChild(uList);
+                container.appendChild(qCard);
+            });
+        }
+
+        // حفظ إجابة الطالبة وتلوين الخيار النشط فوراً
+        function saveStudentAnswer(qIdx, oIdx) {
+            selectedAnswers[qIdx] = oIdx;
+            const currentCard = document.getElementById(`question-idx-${qIdx}`);
+            const items = currentCard.querySelectorAll('.option-item');
+            items.forEach(el => el.classList.remove('selected'));
+            document.getElementById(`opt-item-${qIdx}-${oIdx}`).classList.add('selected');
+        }
+
+        // تحديث عرض السؤال الحالي والنص المرفق المناسب له في اليمين
+        function renderCurrentQuestion() {
+            // إخفاء كل البطاقات وتفعيل الحالية
+            const cards = document.querySelectorAll('.question-card');
+            cards.forEach(c => c.classList.remove('active'));
+            
+            document.getElementById(`question-idx-${currentQIndex}`).classList.add('active');
+            
+            // تغيير النص القرائي في اليمين تلقائياً حسب نوع السؤال
+            const currentType = examQuestions[currentQIndex].type;
+            document.getElementById('readingTextPanel').innerHTML = readingTexts[currentType];
+            
+            // تحديث شريط التقدم العلوي
+            const percentage = ((currentQIndex + 1) / examQuestions.length) * 100;
+            document.getElementById('examProgress').style.width = `${percentage}%`;
+            
+            // التحكم بالأزرار
+            document.getElementById('backBtn').disabled = (currentQIndex === 0);
+            if(currentQIndex === examQuestions.length - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('finishBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('finishBtn').style.display = 'none';
             }
-        });
+        }
 
-        // تشغيل شاشة القفل وإصدار الصوت
-        function triggerSecurityLock() {
-            playWarningSound();
-            document.getElementById('lock-screen').style.display = 'flex';
+        // حركة الانتقال بين الصفحات
+        function moveQuestion(step) {
+            currentQIndex += step;
+            renderCurrentQuestion();
+        }
+
+        // حساب النتيجة النهائية وإظهار شاشة التوثيق الرسمية
+        function showFinalScore() {
+            let totalScore = 0;
+            examQuestions.forEach((item, index) => {
+                if(selectedAnswers[index] === item.a) {
+                    totalScore++;
+                }
+            });
+            
+            document.getElementById('step3-exam').style.display = 'none';
+            document.getElementById('step4-score').style.display = 'block';
+            
+            document.getElementById('certifyText').innerHTML = `الطالبة: <strong>${globalStudentName}</strong><br>الصف: <strong>${globalStudentGrade}</strong>`;
+            document.getElementById('scoreDisplay').innerHTML = `${totalScore}/25 <span>درجة</span>`;
+            
+            const msg = document.getElementById('appraisalMsg');
+            if(totalScore >= 22) {
+                msg.innerText = "رائعة ومتميزة جداً! فخر مدرسة مربح! 🏆🌟";
+                msg.style.color = "#28a745";
+            } else if(totalScore >= 17) {
+                msg.innerText = "أحسنتِ يا بطلة، نتيجة متميزة ومجهود رائع! 👍";
+                msg.style.color = "#004b87";
+            } else {
+                msg.innerText = "محاولة جيدة، ننصحكِ بمراجعة قصص الفصل الثالث لرفع مهاراتكِ. 🌹";
+                msg.style.color = "#d4af37";
+            }
         }
     </script>
 </body>
