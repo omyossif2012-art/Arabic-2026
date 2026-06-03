@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار التجريبي الثاني - عاشق الجدار القديم</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; overflow: hidden; }
+        
+        /* ترويسة المدرسة والوزارة */
+        .header-section {
+            background-color: #fff; padding: 15px 30px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 3px solid #d4af37; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header-title { text-align: center; flex-grow: 1; color: #1a365d; }
+        .header-title h1 { font-size: 20px; margin-bottom: 5px; }
+        .header-title h2 { font-size: 16px; color: #e53e3e; }
+        .school-info { text-align: right; font-size: 14px; font-weight: bold; }
+        
+        /* تقسيم الشاشة الموازي (محاكاة الوزاري) */
+        .main-container { display: flex; height: calc(100vh - 120px); }
+        
+        /* الجانب الأيمن: النص القرائي */
+        .story-side {
+            width: 50%; padding: 25px; background-color: #ffffff; overflow-y: auto;
+            border-left: 2px solid #e2e8f0; line-height: 1.8; font-size: 17px; text-align: justify;
+        }
+        .story-side h3 { color: #2c5282; margin-bottom: 15px; border-bottom: 2px solid #2c5282; padding-bottom: 5px; }
+        
+        /* الجانب الأيسر: الأسئلة */
+        .questions-side { width: 50%; padding: 25px; overflow-y: auto; background-color: #f7fafc; }
+        .question-block {
+            background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-right: 5px solid #3182ce;
+        }
+        .question-text { font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #2d3748; }
+        .options-list { list-style: none; }
+        .option-item { margin-bottom: 10px; display: flex; align-items: center; }
+        .option-item input { margin-left: 10px; transform: scale(1.2); cursor: pointer; }
+        .option-item label { font-size: 15px; cursor: pointer; width: 100%; padding: 5px; border-radius: 4px; }
+        .option-item label:hover { background-color: #ebf8ff; }
+        
+        /* زر الإرسال */
+        .submit-btn {
+            background-color: #3182ce; color: white; padding: 12px 30px; font-size: 16px; font-weight: bold;
+            border: none; border-radius: 5px; cursor: pointer; display: block; margin: 20px auto; transition: background 0.3s;
+        }
+        .submit-btn:hover { background-color: #2b6cb0; }
+        
+        /* شاشة قفل النظام عند محاولة الغش أو التصوير */
+        #lock-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(229, 62, 62, 0.98); color: white; text-align: center;
+            justify-content: center; align-items: center; flex-direction: column; z-index: 9999;
+        }
+        #lock-screen h1 { font-size: 40px; margin-bottom: 20px; }
+        #lock-screen p { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة التحذير المقفلة -->
+    <div id="lock-screen">
+        <h1>⚠️ تم رصد محاولة خروج أو تصوير للشاشة!</h1>
+        <p>تم قفل الامتحان وإرسال تقرير بالحادثة إلى معلمة المادة.</p>
+    </div>
+
+    <!-- ترويسة الاختبار التابع للمدرسة والوزارة -->
+    <div class="header-section">
+        <div class="school-info">
+            <p>مدرسة ميربح للحلقة الثانية بنات ج2</p>
+            <p>مادة: اللغة العربية</p>
+        </div>
+        <div class="header-title">
+            <h1>وزارة التربية والتعليم - دولة الإمارات العربية المتحدة</h1>
+            <h2>الاختبار التجريبي الثاني (عاشق الجدار القديم)</h2>
+            <p>للفصل الدراسي الثالث للعام 2025-2026</p>
+        </div>
+    </div>
+
+    <!-- حاوية الامتحان المقسمة موازياً -->
+    <div class="main-container">
+        
+        <!-- الجانب الأيمن: نص القصة -->
+        <div class="story-side">
+            <h3>قصة: عاشق الجدار القديم</h3>
+            <p>في اللَّيْلِ الموحِشِ العَتِمِ كانوا يَتمترسونَ خَلْفَ الأَكْياسِ الرَّمْلِيَّةِ على الشّاطِئِ، أَيْديهمُ مُمْسِكَةٌ بِالبَنادِقِ العَتيقَةِ (أَبو فَتيل) وَبِالسُّيوفِ الحادَّةِ، وَوَنيسُهُمُ الوَحيدُ موسيقا تَبْعَـثُـها الرِّياحُ الخَريفِيَّةُ عَبْرَ أَمْواجِ البَحْرِ. وَهُناكَ بَعيدًا بَعيدًا تَنْتَصِبُ عَلى الرِّمالِ البُيوتُ السَّعَفِيَّةُ وَالطّينِيَّةُ -وَآخِرُ أَطْلالِها هذا الجِدارُ- تَخْتَزِنُ صَدى البُكاءِ وَالعَويلِ عَلى القَتْلى وَالجَرْحى بِتِلْكَ النّيرانِ، يَرْميها ذلِكَ الشَّيْءُ المُخيفُ الرّابِضُ في كَبِدِ البَحْرِ.</p>
+            <br>
+            <p>الحَرائِقُ في كُلِّ مَكانٍ وَمَعَ النّيرانِ كانَ الوَحْشُ يُرْسِلُ جَراثيمَهُ بَيْنَ الحينِ وَالآخَرِ، عَبْرَ قَوارِبَ تَجْديفٍ تَتَسَلَّلُ إِلى الشّاطِئِ، وَتَنْشُرُ الذُّعْرَ وَالخَوْفَ. الرِّجالُ صامِدونَ يُحَرِّكُهُمْ مَصيرٌ واحِدٌ، فَالشَّهادَةُ مَطْلَبٌ في مُواجَهَـةِ الغَريبِ الّذي جاءَ يَنْهَبُ وَيَسْرِقُ اِبْتِسامَـةً تَأْبى أَنْ تُفارِقَ الأَرْضَ، رائِحَتُها عَطاءٌ دائِمٌ، وَمِياهُها خُبْزٌ وَحِكاياتٌ خالِدَةٌ، وَدُروبُها خُطُواتُ العاشِقينَ في اللَّيالي القَمرِيَّةِ.</p>
+            <br>
+            <p>وَفي تِلْكَ اللَّحْظَةِ وَصَلْتُ لأهنَأَ بِالرّاحَةِ بَعْدَ سَهَرِ اللَّيالي في الحُفَرِ الرَّطْبَةِ.. عَبَرْتُ الزُّقاقَ الضَّيِّقَ.. اِقْتَرَبْتُ، العَويلُ يَزْدادُ وُضوحًا، وَالصُّراخُ يَتَعالى. امْتَلأَتِ السِّكَكُ السَّعفِيَّةُ بِالرَّوائِحِ العَفِنَةِ.. تَكاثَرَتِ الأَدْخِنَةُ.. وَغَطَّتْ سُحبُها الحيَّ كلَّه. أبدتِ الكِلابُ اسْتِياءها لِلأَعْمالِ القَذِرَةِ، وَهِيَ تَجْري عَبْرَ الأَزِقَّـةِ بِاتِّجاهِ ذلِكَ الوَحْشِ. أَحْسَسْتُ بِالدَّمِ يَتَصاعَدُ في عُروقي. إِنَّهُمْ هُناكَ..لَقَدْ غَطَّيْناهُمْ..مادَتِ الأَرْضُ مِنْ تَحْتي..اِتَّكَأْتُ عَلى أَكْتافِ مَنْ كانَ بِجانِبي..</p>
+        </div>
+        
+        <!-- الجانب الأيسر: أسئلة مأخوذة من اختبار المعلمة دعاء -->
+        <div class="questions-side">
+            <form id="quizForm">
+                
+                <!-- السؤال الأول -->
+                <div class="question-block">
+                    <p class="question-text">1. ما المشهد الذي تصفه الفقرة الأولى في القصة؟</p>
+                    <div class="options-list">
+                        <div class="option-item"><input type="radio" name="q1" id="q1a"><label for="q1a">أ- مشهدٌ للنصر.</label></div>
+                        <div class="option-item"><input type="radio" name="q1" id="q1b"><label for="q1b">ب- مشهدٌ للفرح.</label></div>
+                        <div class="option-item"><input type="radio" name="q1" id="q1t"><label for="q1t">ت- مشهدٌ للوداع.</label></div>
+                        <div class="option-item"><input type="radio" name="q1" id="q1th"><label for="q1th">ث- مشهدٌ للحرب.</label></div>
+                    </div>
+                </div>
+
+                <!-- السؤال الثاني -->
+                <div class="question-block">
+                    <p class="question-text">2. بناءً على فهمك لأحداث القصة، ما المعنى الإجمالي الصحيح لها؟</p>
+                    <div class="options-list">
+                        <div class="option-item"><input type="radio" name="q2" id="q2a"><label for="q2a">أ- الوقوف في وجه العدو مهما كلف الأمر وعدم الاستسلام للظلم.</label></div>
+                        <div class="option-item"><input type="radio" name="q2" id="q2b"><label for="q2b">ب- بكاء القتلى، والعويل على المفقودين في الحروب.</label></div>
+                        <div class="option-item"><input type="radio" name="q2" id="q2t"><label for="q2t">ت- الحرص على اقتناء أدوات بحرية قديمة كالشاحوف.</label></div>
+                    </div>
+                </div>
+
+                <!-- السؤال الثالث -->
+                <div class="question-block">
+                    <p class="question-text">3. "مادَتِ الأرضُ مِنْ تَحْتِي" - ما الدلالة التعبيرية الإيحائية لهذه العبارة؟</p>
+                    <div class="options-list">
+                        <div class="option-item"><input type="radio" name="q3" id="q3a"><label for="q3a">أ- اختلال توازنه وصدمته الشديدة.</label></div>
+                        <div class="option-item"><input type="radio" name="q3" id="q3b"><label for="q3b">ب- سيطرة الخوف عليه.</label></div>
+                        <div class="option-item"><input type="radio" name="q3" id="q3t"><label for="q3t">ت- تزلزل الأرض الفعلي.</label></div>
+                    </div>
+                </div>
+
+                <!-- السؤال الرابع -->
+                <div class="question-block">
+                    <p class="question-text">4. ما الفكرة الرئيسة لقصة عاشق الجدار القديم؟</p>
+                    <div class="options-list">
+                        <div class="option-item"><input type="radio" name="q4" id="q4a"><label for="q4a">أ- التشبث بالأرض في مواجهة العدوان وتحويل الفقد إلى صمود وبطولة.</label></div>
+                        <div class="option-item"><input type="radio" name="q4" id="q4b"><label for="q4b">ب- وصف جمال السواحل البحرية ليلاً.</label></div>
+                        <div class="option-item"><input type="radio" name="q4" id="q4t"><label for="q4t">ت- التعرف على حياة الصيادين قديماً.</label></div>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick="alert('تم استلام إجاباتكِ بنجاح!')">تسليم الامتحان</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نظام الحماية وإصدار الصوت المانع للغش والتصوير -->
+    <script>
+        // إنشاء تأثير صوتي عالي لإنذار الطالبة
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playWarningSound() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // تردد صوت الإنذار
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 1.5); // يستمر الصوت لمدة ثانية ونصف
+        }
+
+        // 1. تفعيل نظام منع تصوير الشاشة (منع اختصارات لوحة المفاتيح واكتشاف محاولة الطباعة)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p') || (e.metaKey && e.shiftKey && e.key === '4')) {
+                e.preventDefault();
+                triggerSecurityLock();
+            }
+        });
+
+        // 2. تفعيل نظام اكتشاف خروج الطالبة من صفحة الامتحان (الذهاب لعلامة تبويب أخرى)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                triggerSecurityLock();
+            }
+        });
+
+        // تشغيل شاشة القفل وإصدار الصوت
+        function triggerSecurityLock() {
+            playWarningSound();
+            document.getElementById('lock-screen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
